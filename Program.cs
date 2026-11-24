@@ -25,7 +25,7 @@ public class Program
                     StoreEntry();
                     break;
                 case "2":
-                    Console.WriteLine("--> [Edit Feature] to be implemented.");
+                    EditEntry(); // <-- Connected to Phase 3!
                     break;
                 case "3":
                     Console.WriteLine("--> [Search Feature] to be implemented.");
@@ -61,25 +61,16 @@ public class Program
             Console.Write("Enter occupation: ");
             string occupation = Console.ReadLine();
             
-            // Safety check for gender input
             char gender = 'M';
             bool validGender = false;
             while (!validGender)
             {
                 Console.Write("Enter gender (M for male, F for female): ");
                 string genderInput = Console.ReadLine().ToUpper();
-                if (genderInput == "M" || genderInput == "F")
-                {
-                    gender = genderInput[0];
-                    validGender = true;
-                }
-                else
-                {
-                    Console.WriteLine("  [Error] Please enter M or F.");
-                }
+                if (genderInput == "M" || genderInput == "F") { gender = genderInput[0]; validGender = true; }
+                else { Console.WriteLine("  [Error] Please enter M or F."); }
             }
 
-            // Country Code Validation Loop
             int countryCode = 0;
             bool validCountry = false;
             while (!validCountry)
@@ -89,19 +80,10 @@ public class Program
                 
                 if (int.TryParse(ccInput, out countryCode))
                 {
-                    if (countryCode == 60 || countryCode == 62 || countryCode == 63 || countryCode == 65 || countryCode == 66)
-                    {
-                        validCountry = true;
-                    }
-                    else
-                    {
-                        Console.WriteLine("  [Error] Invalid country code. Please use 60, 62, 63, 65, or 66.");
-                    }
+                    if (countryCode == 60 || countryCode == 62 || countryCode == 63 || countryCode == 65 || countryCode == 66) { validCountry = true; }
+                    else { Console.WriteLine("  [Error] Invalid country code. Please use 60, 62, 63, 65, or 66."); }
                 }
-                else
-                {
-                    Console.WriteLine("  [Error] Please enter a valid number.");
-                }
+                else { Console.WriteLine("  [Error] Please enter a valid number."); }
             }
 
             Console.Write("Enter area code: ");
@@ -109,7 +91,6 @@ public class Program
             
             Console.Write("Enter number: ");
             string phoneNumber = Console.ReadLine();
-
 
             Student newStudent = new Student(studentNumber, surname, firstName, occupation, gender, countryCode, areaCode, phoneNumber);
             phonebook.Add(newStudent);
@@ -119,9 +100,106 @@ public class Program
             Console.Write("Do you want to enter another entry [Y/N]? ");
             string answer = Console.ReadLine().ToUpper();
             
-            if (answer != "Y")
+            if (answer != "Y") { addAnother = false; }
+        }
+    }
+
+    // --- PHASE 3: EDIT ENTRY ---
+    public static void EditEntry()
+    {
+        Console.Write("\nEnter student number: ");
+        string searchId = Console.ReadLine();
+
+        // 1. Find the student in the list
+        Student studentToEdit = null;
+        foreach (Student s in phonebook)
+        {
+            if (s.StudentNumber == searchId)
             {
-                addAnother = false;
+                studentToEdit = s;
+                break;
+            }
+        }
+
+        // 2. If not found, alert error
+        if (studentToEdit == null)
+        {
+            Console.WriteLine("  [Error] Student number not found.");
+            return;
+        }
+
+        // 3. If found, enter the edit loop
+        bool editing = true;
+        while (editing)
+        {
+            Console.WriteLine($"\nHere is the existing information about {studentToEdit.StudentNumber}:");
+            
+            // Uses the method we wrote in Student.cs
+            Console.WriteLine(studentToEdit.GetEditDisplayString());
+
+            Console.WriteLine("\nWhich of the following information do you wish to change?");
+            Console.WriteLine("[1] Student number [2] Surname [3] Gender [4] Occupation");
+            Console.WriteLine("[5] Country code [6] Area code [7] Phone number");
+            Console.WriteLine("[8] None - Go back to main menu");
+            Console.Write("Enter choice: ");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    Console.Write("Enter new student number: ");
+                    studentToEdit.StudentNumber = Console.ReadLine();
+                    break;
+                case "2":
+                    Console.Write("Enter new surname: ");
+                    studentToEdit.Surname = Console.ReadLine();
+                    break;
+                case "3":
+                    bool validGender = false;
+                    while (!validGender)
+                    {
+                        Console.Write("Enter new gender (M/F): ");
+                        string g = Console.ReadLine().ToUpper();
+                        if (g == "M" || g == "F") { studentToEdit.Gender = g[0]; validGender = true; }
+                        else { Console.WriteLine("  [Error] Please enter M or F."); }
+                    }
+                    break;
+                case "4":
+                    Console.Write("Enter new occupation: ");
+                    studentToEdit.Occupation = Console.ReadLine();
+                    break;
+                case "5":
+                    // Validation for changing country code
+                    int cc = 0;
+                    bool validCountry = false;
+                    while (!validCountry)
+                    {
+                        Console.Write("Enter new country code: ");
+                        string ccInput = Console.ReadLine();
+                        if (int.TryParse(ccInput, out cc))
+                        {
+                            if (cc == 60 || cc == 62 || cc == 63 || cc == 65 || cc == 66) { validCountry = true; }
+                            else { Console.WriteLine("  [Error] Invalid country code."); }
+                        }
+                        else { Console.WriteLine("  [Error] Enter a number."); }
+                    }
+                    studentToEdit.CountryCode = cc;
+                    break;
+                case "6":
+                    Console.Write("Enter new area code: ");
+                    studentToEdit.AreaCode = int.Parse(Console.ReadLine());
+                    break;
+                case "7":
+                    Console.Write("Enter new phone number: ");
+                    studentToEdit.PhoneNumber = Console.ReadLine();
+                    break;
+                case "8":
+                    editing = false; // Exits the loop and goes back to Main
+                    break;
+                default:
+                    Console.WriteLine("Invalid option. Please try again.");
+                    break;
             }
         }
     }
