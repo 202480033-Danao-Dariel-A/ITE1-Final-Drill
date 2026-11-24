@@ -25,10 +25,10 @@ public class Program
                     StoreEntry();
                     break;
                 case "2":
-                    EditEntry(); // <-- Connected to Phase 3!
+                    EditEntry();
                     break;
                 case "3":
-                    Console.WriteLine("--> [Search Feature] to be implemented.");
+                    SearchEntry();
                     break;
                 case "4":
                     running = false;
@@ -201,6 +201,64 @@ public class Program
                     Console.WriteLine("Invalid option. Please try again.");
                     break;
             }
+        }
+    }
+
+        // --- PHASE 4: SEARCH ENTRY ---
+    public static void SearchEntry()
+    {
+        List<int> selectedCodes = new List<int>();
+        bool selecting = true;
+        int choiceNum = 1;
+
+        Console.WriteLine("\nFrom which country:");
+        Console.WriteLine("[1] Philippines [2] Thailand [3] Singapore [4] Indonesia");
+        Console.WriteLine("[5] Malaysia [6] ALL [0] No More");
+
+        while (selecting)
+        {
+            Console.Write($"Enter choice {choiceNum}: ");
+            string input = Console.ReadLine();
+            
+            switch (input)
+            {
+                case "1": selectedCodes.Add(63); choiceNum++; break;
+                case "2": selectedCodes.Add(66); choiceNum++; break;
+                case "3": selectedCodes.Add(65); choiceNum++; break;
+                case "4": selectedCodes.Add(62); choiceNum++; break;
+                case "5": selectedCodes.Add(60); choiceNum++; break;
+                case "6": 
+                    selectedCodes.Clear();
+                    selectedCodes.AddRange(new int[] { 60, 62, 63, 65, 66 });
+                    selecting = false; 
+                    break;
+                case "0": selecting = false; break;
+                default: Console.WriteLine("  [Error] Invalid choice."); break;
+            }
+        }
+
+        List<Student> filteredList = new List<Student>();
+        foreach (Student s in phonebook)
+        {
+            if (selectedCodes.Contains(s.CountryCode))
+            {
+                filteredList.Add(s);
+            }
+        }
+
+        filteredList.Sort((x, y) => string.Compare(x.Surname, y.Surname));
+
+        Console.WriteLine();
+        if (filteredList.Count == 0)
+        {
+            Console.WriteLine("No students found from the selected countries.");
+            return;
+        }
+
+        foreach (Student s in filteredList)
+        {
+            string lowerOcc = s.Occupation.ToLower();
+            Console.WriteLine($"{s.Surname}, {s.FirstName}, with student number {s.StudentNumber}, is a {lowerOcc}. {s.GetPronoun()} phone number is {s.CountryCode}-{s.AreaCode}-{s.PhoneNumber}");
         }
     }
 }
